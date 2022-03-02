@@ -10,3 +10,7 @@ build:
 clean:
 	rm -rf ./object
 	rm -rf libDataContainers.a
+
+rebuild:
+	make clean
+	make build
