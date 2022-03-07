@@ -12,6 +12,15 @@ Example usage to implement a mapping from c style strings to integers:
 HASHMAP(myMap, const char*, int)
 ```
 
+This custom type will be defined in-macro as
+```
+typedef struct typename{
+	typename##TSHM_NODE** data;
+	uint32_t capacity;
+	uint32_t size;
+}typename; \
+```
+
 It is reccommended you put this in a header to complement the definition function `HASHMAP_SOURCE(typename, keyType, valType, hashing)`, the final argument in this macro function is a reference to a hashing function which operates on your key type.
 
 Example usage:
@@ -104,9 +113,50 @@ if (myMapContains(&map, "Parrot count")){
 	myMapResult data = myMapPop(&map, "Parrot count");
 	printf("%s : %d\n", data.key, data.val);
 }
+
+...
 ```
 
+To clear all data from a defined type `myMap`, call `void myMapClear(myMap*);`.
+```
+myMap map = myMapInit();
 
+...
+
+if (map.size > 0){
+	myMapClear(&map);
+}
+
+...
+```
+
+### Iteration
+There are two ways to iterate any hash map. This library implements both. The first is to retrieve some collection of all keys which exist in the mapping. For some defined type `myMap` this can be done with `const char** myMapGetKeySet(myMap*);`.
+```
+myMap map = myMapInit();
+
+...
+
+const char** keySet = myMapGetKeySet(&map);
+int i;
+for (i = 0;i<map.size;++i){
+	int value = myMapGet(&map, keySet[i]).val;
+}
+```
+
+The other manner to iterate is with an actual "data generator function" style iterator. For some defined type `myMap`, you can create an iterator of type `myMapIterator` as
+```
+myMap map = myMapInit();
+
+...
+
+myMapIterator it = myMapIteratorInit(&map);
+while(myMapIteratorHasNext(&it)){
+	int value = myMapIteratorNext(&it).val;
+}
+```
 
 ## Vector
+
 ## Queue
+
