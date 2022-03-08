@@ -247,7 +247,7 @@ V32Reserve(V32*, uint32_t places);
 
 which will ensure that that many new places are available for future operations without any extraneous resizing.
 
-There are four available functions to reference data within some defined vector type `V32`. To get a copy of the data at a position in the vector use `int V32Get(V32*, uint32_t index);`. To retrieve a reference to the posiiton in the vector where a value is stored use `int* V32Ref(V32*, uint32_t index);`. There also exist "trusted" versions of these two functions which assume that the index you are passing is within the bounds of the vector.
+There are four available functions to reference data within some defined vector type `V32`. To get a copy of the data at a position in the vector use `int V32Get(V32*, uint32_t index);`. To retrieve a reference to the posiiton in the vector where a value is stored use `int* V32Ref(V32*, uint32_t index);`. There also exist "trusted" versions of these two functions which assume that the index you are passing is within the bounds of the vector. The only difference is they have one less conditional statement.
 ```
 V32 vec = V32Init();
 
@@ -260,10 +260,49 @@ int* b = V32Ref(&vec, 8);
 ...
 ```
 
+Another way to change the value of an item in a vector is to call `void V32Set(V32*, uint32_t index, int item);`, this function also has a trusted version.
+```
+V32 vec = V32Init();
 
+...
+
+V32Set(&vec, 4, 5); // set index 4 to value 5 
+
+...
+```
+
+To remove an item from a `V32` type vector use `int V32Remove(V32*, uint32_t index);`, this returns the value you removed. For efficiency sake, this function does not maintain the order of the function, in order to retain the order, call `int V32RemoveInOrder(V32*, uint32_t index);`
+To simply remove the last element in a `V32` typed vector, use `int V32Pop(V32*);`, which similarly returns the element being removed.
+```
+V32 vec = V32Init();
+
+...
+
+int last = V32Pop(&vec);
+int item = V32Remove(&vec, 4);
+
+...
+```
+
+Alternatively if you want to clear the whole vector, use `V32Clear(V32*);`
+
+### Iteration
+You may use any accessor function mentioned to do manual iteration, however there is a built in data generator function style iterator for each defined vector type.
+```
+V32 vec = V32Init();
+
+...
+
+V32Iterator it = V32IteratorInit(&vec);
+while (V32IteratorHasNext(&it)){
+	int value = V32IteratorNext(&it);
+}
+
+...
+```
 
 ### CVector
-CVector is a predefined type build separately to work with `void*` as its type.
+CVector is a predefined type build separately to work with `void*` as its type. It has a separate definition but has all the same functions and abilities.
 
 ## Queue
 
