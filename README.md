@@ -1,6 +1,6 @@
 # Description
 This is simple statically linked data container library for C projects. They are type safe, and defined mostly through pre-processor directives.
-# Documentation (WIP)
+# Documentation 
 Data containers are not a single struct type in this library, but you can define custom types with any given container data type through a pre-processor function. You define those types at the start of the program, and you can then use them at will.
 ## Building
 To build this project as a static library, call the make target `make build`.
@@ -305,4 +305,59 @@ while (V32IteratorHasNext(&it)){
 CVector is a predefined type build separately to work with `void*` as its type. It has a separate definition but has all the same functions and abilities.
 
 ## Queue
+To define a queue type call the declaration function `QUEUE(typename, type)`, preferably in a header. The struct this will generate will be in the form
+```
+typedef struct typename{
+	typename##TSQ_NODE* head;
+	typename##TSQ_NODE* end;
+	uint32_t size; 
+}typename; 
+```
+
+Then call its definition function `QUEUE_SOURCE(typename, type)`.
+```
+QUEUE(q, char)
+
+...
+
+QUEUE(q, char)
+
+```
+
+To create an instance of this custom defined type, call it initialization function `typename##Init();` as 
+```
+q myq = qInit();
+
+```
+
+Note that for every `qInit();` there must eventually follow a `qFree(q*);`.
+```
+q myq = qInit();
+
+...
+
+
+qFree(&myq);
+```
+
+Queues have two simple operations, push and pop. For some type `q`, using `void qPush(q*, char data);`will add an element of type `char` to the end of the queue. Whereas `char qPop(q*);` will remove and return the `char` at the front of the queue.
+```
+q myq = qInit();
+
+qPush(&myq, 'a');
+qPush(&myq, 'b');
+qPush(&myq, 'c');
+qPush(&myq, 'd');
+qPush(&myq, 'e');
+
+qPop(&myq); // pops a
+qPop(&myq); // pops b
+qPop(&myq); // pops c
+qPop(&myq); // pops d
+qPop(&myq); // pops e
+
+qFree(&myq);
+
+```
+
 
