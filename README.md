@@ -157,6 +157,113 @@ while(myMapIteratorHasNext(&it)){
 ```
 
 ## Vector
+### General
+To create a custom Vector type call the function `VECTOR(typename, type)`. The first argument deisgnates the typename of your new type, the second argument designates the type it takes.
+Example usage to implement a vector of integers:
+```
+VECTOR(V32, int)
+```
+
+The vector struct this generates is in the form
+```
+typedef struct typename{ \
+	type* data; \
+	uint32_t capacity; \
+	uint32_t size; \
+}typename; \
+
+```
+
+It is reccommended you put this in a header file to complement the definition function `VECTOR_SOURCE(typename, type)`, which should be placed in some implementation `.c` file.
+
+```
+VECTOR_SOURCE(V32, int)
+```
+
+You may now use your defined vector type by calling the `typename typename##Init();` function as
+```
+V32 vec = V32Init();
+```
+
+**Function Summary**
+- `typename typename##Init();`
+- `void typename##Free(typename* vec);`
+- `void typename##PushBack(typename* vec, type item);`
+- `void typename##Insert(typename* vec, uint32_t index, type item);`
+- `uint32_t typename##PushInOrder(typename* vec, type item, int8_t(*comparator)(type, type));`
+- `void typename##Reserve(typename* vec, uint32_t places);`
+- `type typename##Get(typename* vec, uint32_t index);`
+- `type typename##GetTruested(typename* vec, uint32_t index);`
+- `type* typename##Ref(typename* vec, uint32_t index);`
+- `type* typename##RefTrusted(typename* vec, uint32_t index);`
+- `void typename##Set(typename* vec, uint32_t index, type item);`
+- `void typename##SetTrusted(typename* vec, uint32_t index, type item);`
+- `type typename##RemoveInOrder(typename* vec, uint32_t index);`
+- `type typename##Remove(typename* vec, uint32_t index);`
+- `type typename##Pop(typename* vec);`
+- `void typename##Clear(typename* vec);`
+- `typename##Iterator typename##IteratorInit(typename* vec);`
+- `uint8_t typename##IteratorHasNext(typename##Iterator* it);`
+- `type typename##IteratorNext(typename##Iterator* it);`
+
+Following the example of our custom vector type `V32`, for every `V32Init();`, you must call a `V32Free(V32*);`.
+```
+V32 vec = V32Init();
+
+...
+
+V32Free(&vec);
+```
+
+To add to a defined vector type `V32` you have three options. If you would simply like to add it to the end, use `V32PushBack(V32*, int data);`. If you would like to insert the element at some other position, use `V32Insert(V32*, uint32_t index, int data);`. And finally if you would like to insert the item with some ordering in mind, use `V32PushInOrder(V32*, int data, int8_t(*comparator)(int, int));`, The final argument in this function represents a pointer to a function which takes two variables of the vectors container type and returns comparison information about the two elements. This is the function it uses to order elements.
+
+**By default you are provided the following build in comparators**
+- `int8_t u8Compare(uint8_t a, uint8_t b);`
+- `int8_t u16Compare(uint16_t a, uint16_t b);`
+- `int8_t u32Compare(uint32_t a, uint32_t b);`
+- `int8_t u64Compare(uint64_t a, uint64_t b);`
+- `int8_t i8Compare(int8_t a, uint8_t b);`
+- `int8_t i16Compare(int16_t a, uint16_t b);`
+- `int8_t i32Compare(int32_t a, uint32_t b);`
+- `int8_t i64Compare(int64_t a, uint64_t );`
+
+Whatever comparator you end up using should return 0 on equallity, -1 on less than, and 1 on greater than. 
+
+Example usage insert functions:
+```
+V32 vec = V32Init();
+
+V32PushBack(&vec, 5); // insert 5 at end of list
+V32Insert(&vec, 0, 3); // insert 3 at the beginning of the list
+V32PushInOrder(&vec, 4, i32Compare); // insert 4 in order in the list
+
+V32Free(&vec);
+```
+
+As an optimization strategy with resizing array-like data structures, you may want to reserve some capacity so that extraneous resizes do not have to occur. In order to accomplish this with some predefined `V32` call its reserve function as
+```
+V32Reserve(V32*, uint32_t places);
+```
+
+which will ensure that that many new places are available for future operations without any extraneous resizing.
+
+There are four available functions to reference data within some defined vector type `V32`. To get a copy of the data at a position in the vector use `int V32Get(V32*, uint32_t index);`. To retrieve a reference to the posiiton in the vector where a value is stored use `int* V32Ref(V32*, uint32_t index);`. There also exist "trusted" versions of these two functions which assume that the index you are passing is within the bounds of the vector.
+```
+V32 vec = V32Init();
+
+...
+
+int a = V32Get(&vec, 0);
+int* b = V32Ref(&vec, 8);
+*b = 3; // changes the value of vec at position 8 to 3
+
+...
+```
+
+
+
+### CVector
+CVector is a predefined type build separately to work with `void*` as its type.
 
 ## Queue
 
