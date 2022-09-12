@@ -5,14 +5,12 @@ build:
 	mkdir object
 	$(CC) -c ./src/vector/vector.c -o ./object/vector.o
 	$(CC) -c ./src/hashMap/hashMap.c -o ./object/hashMap.o
-	$(CC) -c ./src/queue/queue.c -o ./object/queue.o
 	ar rcs libDataContainers.a ./object/*.o
 
 build-win:
 	mkdir object
 	$(CCWIN) -c ./src/vector/vector.c -o ./object/vector.o
 	$(CCWIN) -c ./src/hashMap/hashMap.c -o ./object/hashMap.o
-	$(CCWIN) -c ./src/queue/queue.c -o ./object/queue.o
 	ar rcs libDataContainers.dll ./object/*.o
 
 clean:
